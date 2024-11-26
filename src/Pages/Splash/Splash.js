@@ -1,12 +1,12 @@
-import {View, Image, SafeAreaView} from 'react-native';
-import React, {Fragment, useEffect} from 'react';
-import {BRAND, WHITE} from '../../constants/color';
+import { View, Image, SafeAreaView } from 'react-native';
+import React, { Fragment, useEffect } from 'react';
+import { BRAND, WHITE } from '../../constants/color';
 import LinearGradient from 'react-native-linear-gradient';
-import {LOGO, LOGOZZ} from '../../constants/imagepath';
-import {HEIGHT, MyStatusBar, WIDTH} from '../../constants/config';
-import {splashStyles} from './SplashStyles';
+import { LOGO, LOGOZZ } from '../../constants/imagepath';
+import { HEIGHT, MyStatusBar, WIDTH } from '../../constants/config';
+import { splashStyles } from './SplashStyles';
 
-const Splash = ({navigation}) => {
+const Splash = ({ navigation }) => {
   useEffect(() => {
     setTimeout(() => {
       navigation.navigate('Login');
@@ -18,8 +18,8 @@ const Splash = ({navigation}) => {
       <MyStatusBar backgroundColor={BRAND} barStyle={'dark-content'} />
       <SafeAreaView style={splashStyles.maincontainer}>
         <LinearGradient
-          end={{x: 0, y: 0}}
-          start={{x: 0, y: 1}}
+          end={{ x: 0, y: 0 }}
+          start={{ x: 0, y: 1 }}
           colors={[BRAND, BRAND]}
           style={{
             flex: 1,
@@ -39,7 +39,7 @@ const Splash = ({navigation}) => {
                 width: '90%',
                 height: '100%',
               }}
-              source={LOGOZZ}
+            // source={LOGOZZ}
             />
           </View>
           <View style={splashStyles.logoContainer}>
@@ -51,7 +51,7 @@ const Splash = ({navigation}) => {
                 width: '80%',
                 height: '90%',
               }}
-              source={LOGO}
+            // source={LOGO}
             />
           </View>
         </LinearGradient>

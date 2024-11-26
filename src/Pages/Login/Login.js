@@ -15,7 +15,7 @@ const Login = () => {
         alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'white'
+        backgroundColor: 'cyan'
       }}>
       <Text
         onPress={() => {
