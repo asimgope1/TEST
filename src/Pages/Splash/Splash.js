@@ -1,16 +1,17 @@
 import { View, Image, SafeAreaView } from 'react-native';
 import React, { Fragment, useEffect } from 'react';
-import { BRAND, WHITE } from '../../constants/color';
+import { BRAND, WHITE,CHECKBOX,BLACK } from '../../constants/color';
 import LinearGradient from 'react-native-linear-gradient';
 import { LOGO, LOGOZZ } from '../../constants/imagepath';
 import { HEIGHT, MyStatusBar, WIDTH } from '../../constants/config';
 import { splashStyles } from './SplashStyles';
 
 const Splash = ({ navigation }) => {
+  
   useEffect(() => {
     setTimeout(() => {
-      navigation.navigate('Login');
-    }, 1000);
+      // navigation.navigate('Login');
+    }, 2000);
   }, []);
 
   return (
@@ -20,7 +21,7 @@ const Splash = ({ navigation }) => {
         <LinearGradient
           end={{ x: 0, y: 0 }}
           start={{ x: 0, y: 1 }}
-          colors={[BRAND, BRAND]}
+          colors={[BLACK, CHECKBOX]}
           style={{
             flex: 1,
             justifyContent: 'center',
@@ -39,8 +40,7 @@ const Splash = ({ navigation }) => {
                 width: '90%',
                 height: '100%',
               }}
-            // source={LOGOZZ}
-            />
+              source={require('../../assets/images/logo.png')}            />
           </View>
           <View style={splashStyles.logoContainer}>
             <Image
