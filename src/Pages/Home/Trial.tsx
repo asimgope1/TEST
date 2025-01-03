@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     width: '80%',
     alignItems: 'center',
-  },
+  }, 
   buttonText: {
     color: 'white',
     fontSize: 16,
