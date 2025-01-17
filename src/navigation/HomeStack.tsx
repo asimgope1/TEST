@@ -35,6 +35,9 @@ import Discover from '../Pages/Home/ButtomTab/Discover';
 import AddCartRedux from '../Pages/Home/Drawer/AddCartRedux';
 import CustomDrawer from '../Pages/Home/Drawer/CustomDrawer';
 import SumamryCart from '../Pages/Home/Drawer/SumamryCart';
+import DescripProduct from '../Pages/Home/Drawer/DescripProduct';
+import SuccessfulBuy from '../Pages/Home/Drawer/SuccessfulBuy';
+import QRSCANNER from '../Pages/Home/Drawer/QRSCANNER';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -58,6 +61,21 @@ const HomeScreen = () => {
       <Stack.Screen
         name="SumamryCart"
         component={SumamryCart}
+        
+      />
+      <Stack.Screen
+        name="DescripProduct"
+        component={DescripProduct}
+        
+      />
+      <Stack.Screen
+        name="SuccessfulBuy"
+        component={SuccessfulBuy}
+        
+      />
+      <Stack.Screen
+        name="QRSCANNER"
+        component={QRSCANNER}
         
       />
     </Stack.Navigator>
@@ -165,7 +183,10 @@ const DrawerNavigator = () => {
         drawerType: 'slide', // Drawer animation type
       }}
       drawerContent={props => <CustomDrawer {...props} />}>
-      <Drawer.Screen name="Home" component={TabNavigator} />
+      <Drawer.Screen name="Home" component={TabNavigator}
+      options={{
+        drawerLabel: () => null 
+      }} />
       <Drawer.Screen name="AddCartRedux" component={AddCartRedux}
         options={{
           drawerLabel: () => null 
@@ -173,6 +194,20 @@ const DrawerNavigator = () => {
       <Drawer.Screen name="SumamryCart" component={SumamryCart}
         options={{
           drawerLabel: () => null 
+        }}/>
+      <Drawer.Screen name="DescripProduct" component={DescripProduct}
+        options={{
+          drawerLabel: () => null 
+        }}/>
+      <Drawer.Screen name="SuccessfulBuy" component={SuccessfulBuy}
+        options={{
+          drawerLabel: () => null 
+        }}
+        />
+      <Drawer.Screen name="QRSCANNER" component={QRSCANNER}
+        options={{
+          drawerLabel: () => null 
+
         }}/>
     </Drawer.Navigator>
   );

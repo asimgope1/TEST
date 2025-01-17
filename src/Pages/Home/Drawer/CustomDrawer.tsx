@@ -169,9 +169,14 @@ const CustomDrawer = props => {
                       <Text style={{}}>Box 2</Text>
                     </View>
                   </TouchableOpacity>
+                  <TouchableOpacity
+                  onPress={() => {
+                    navigation.navigate('QRSCANNER');
+                  }}>
                   <View style={{}}>
                     <Text style={{}}>Box 3</Text>
                   </View>
+                  </TouchableOpacity>
                   <View style={{}}>
                     <Text style={{}}>Box 4</Text>
                   </View>

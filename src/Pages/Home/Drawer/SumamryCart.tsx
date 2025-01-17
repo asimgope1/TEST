@@ -13,10 +13,13 @@ import {Card} from '@rneui/themed';
 import {FlatList} from 'react-native-gesture-handler';
 import { removeItem } from '../../../redux/actions/auth';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import { useNavigation } from '@react-navigation/native';
+import { HEIGHT } from '../../../constants/config';
 
 const SummaryCart = () => {
   const cartItems = useSelector(state => state.cartItems);
   const dispatch = useDispatch();
+  const navigation= useNavigation()
 
   const removeItemHandler = index => {
     dispatch(removeItem(index));
@@ -24,9 +27,16 @@ const SummaryCart = () => {
 
   const renderItem = ({item, index}) => (
     <View style={styles.user}>
-      <Image style={styles.image} source={{uri: item.avatar}} />
+      <Image style={styles.image} source={{uri: item.thumbnail}} />
       <View style={styles.info}>
-        <Text style={styles.price}>{item.price}</Text>
+        <Text style={styles.price}>{item.price} INR</Text>
+      </View>
+      <View style={styles.info}>
+        <Text style={{
+          fontSize: 14,
+          fontWeight: '500',
+          color: '#6D6D6D',
+        }}>{item.category}</Text>
       </View>
       <TouchableOpacity
         style={styles.removeButton}
@@ -78,8 +88,39 @@ const SummaryCart = () => {
         data={cartItems}
         keyExtractor={(item, index) => index.toString()}
         renderItem={renderItem}
+
         
       />
+      <View
+      style={{
+        height:'40%',
+            width:'50%',
+            justifyContent: 'center',
+            alignItems: 'center',
+            
+            alignSelf:'center',
+      }}>
+        <TouchableOpacity
+          style={{
+            backgroundColor: '#004953',
+            borderRadius: 5,
+            paddingHorizontal: 15,
+            paddingVertical: 10,
+            // marginTop: 20,
+            
+            position:'absolute',
+            bottom:20,
+          }}
+          onPress={() => {
+navigation.navigate('SuccessfulBuy')          }}
+        >
+          <Text style={{
+            color: 'white',
+            fontSize: 18,
+            fontWeight: '600',
+          }}>Checkout</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };

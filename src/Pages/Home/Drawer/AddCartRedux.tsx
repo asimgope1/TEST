@@ -1,4 +1,5 @@
 import {
+  ActivityIndicator,
   FlatList,
   Image,
   StyleSheet,
@@ -6,85 +7,105 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import HeaderComp from '../HeaderComp';
 import {useDispatch, useSelector} from 'react-redux';
 import {addItem} from '../../../redux/actions/auth';
-
-const users = [
-  {
-    avatar:
-      'https://images.pexels.com/photos/598745/pexels-photo-598745.jpeg?crop=faces&fit=crop&h=200&w=200&auto=compress&cs=tinysrgb',
-    price: 'INR 25000',
-  },
-  {
-    avatar: 'https://randomuser.me/api/portraits/men/4.jpg',
-    price: 'INR 52000',
-  },
-  {
-    avatar:
-      'https://images-na.ssl-images-amazon.com/images/M/MV5BMTgxMTc1MTYzM15BMl5BanBnXkFtZTgwNzI5NjMwOTE@._V1_UY256_CR16,0,172,256_AL_.jpg',
-    price: 'INR 85000',
-  },
-];
+import {useNavigation} from '@react-navigation/native';
 
 const AddCartRedux = () => {
   const dispatch = useDispatch();
-  // const [addItemCount,setAddItemCount]=useState([])
+  const navigation = useNavigation();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const addCart = item => {
     dispatch(addItem(item));
-    console.log('jjggjhjghgjgghdvj',item)
+    console.log('jjggjhjghgjgghdvj', item);
   };
-  const cartItems  =useSelector(state=>state)
-  
-
-
-  
 
   const renderItem = ({item}) => (
-    <View style={styles.user}>
-      <Image
-        style={styles.image}
-        resizeMode="cover"
-        source={{uri: item.avatar}}
-      />
-      <View style={styles.info}>
-        <Text style={styles.price}>{item.price}</Text>
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate('DescripProduct', {
+          thumbnail: item.thumbnail,
+          price: item.price,
+          category: item.category,
+          description: item.description,
+        });
+      }}>
+      <View style={styles.user}>
+        <Image
+          style={styles.image}
+          resizeMode="cover"
+          source={{uri: item.thumbnail}}
+        />
+
+        <View style={styles.info}>
+          <Text style={styles.price}>{item.price} INR</Text>
+        </View>
+        <View style={styles.info}>
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: '500',
+              color: '#6D6D6D',
+            }}>
+            {item.category}
+          </Text>
+        </View>
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => {
+            addCart(item); // Call the addCart function
+            console.log('Item added to cart', item); // Log the added item
+          }}
+          accessibilityLabel={`Add item with price ${item.price}`}>
+          <Text style={styles.addButtonText}>ADD</Text>
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity
-  style={styles.addButton}
-  onPress={() => {
-    addCart(item); // Call the addCart function
-    console.log('Item added to cart', item); // Log the added item
-  }}
-  accessibilityLabel={`Add item with price ${item.price}`}>
-  <Text style={styles.addButtonText}>ADD</Text>
-</TouchableOpacity>
-    </View>
+    </TouchableOpacity>
   );
 
+  const FetchProducts = async () => {
+    try {
+      const response = await fetch('https://dummyjson.com/products');
+      const data = await response.json();
+      setProducts(data.products);
+        console.log('Products', data.products);
+    } catch (e) {
+      console.log('Error fetching products', e);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    FetchProducts();
+  }, []);
+
   return (
-    // <View style={styles.container}>
-    //   <HeaderComp title={'CART'} />
-    //   <FlatList
-    //     data={users}
-    //     keyExtractor={(item, index) => index.toString()}
-    //     renderItem={renderItem}
-    //     contentContainerStyle={styles.listContainer}
-        
-    //   />
-    // </View>
     <View style={styles.container}>
-      <HeaderComp 
-      // title={`CART (${cartItems.length})`}
-      title={'CART'} 
+      <HeaderComp
+        // title={`CART (${cartItems.length})`}
+        title={'ITEMS'}
       />
-      <FlatList
-        data={users}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderItem}
-      />
+      {loading ? (
+        <ActivityIndicator
+          style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+          size="large"
+          color="#0000ff"
+        />
+      ) : (
+        <FlatList
+          data={products}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderItem}
+        />
+      )}
     </View>
   );
 };

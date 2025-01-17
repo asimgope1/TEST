@@ -15,6 +15,8 @@ const HeaderComp = ({title}) => {
   const isHomeScreen = route.name === 'Home';
   const isCartScreen = route.name === 'AddCartRedux';
   const isSummaryScreen = route.name === 'SumamryCart';
+  const isDescriptionScreen = route.name === 'DescripProduct'
+  const isSuccessfullBuyScreen = route.name === 'SuccessfulBuy'
   // const dispatch = useDispatch();
   // const [addItemCount,setAddItemCount]=useState([])
 
@@ -49,7 +51,12 @@ const HeaderComp = ({title}) => {
             navigation.navigate('AddCartRedux');
           } else if (isCartScreen) {
             navigation.navigate('Home');
-          } else {
+          }else if(isDescriptionScreen){
+            navigation.navigate('AddCartRedux');
+          }else if(isSuccessfullBuyScreen){
+            navigation.navigate('AddCartRedux')
+          }
+           else {
             navigation.goBack();
           }
         }}>
