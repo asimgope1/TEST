@@ -1,5 +1,6 @@
 import {getObjByKey} from '../../utils/Storage';
 import {AUTH_STATUS} from '../types';
+import { ADD_Item, Remove_Item } from '../types';
 
 export const checkuserToken = () => {
   return async dispatch => {
@@ -16,3 +17,13 @@ export const checkuserToken = () => {
     });
   };
 };
+
+export const addItem = data => ({
+  type: ADD_Item,
+  payload: data,
+});
+
+export const removeItem = index => ({
+  type: Remove_Item,
+  payload: index,
+});

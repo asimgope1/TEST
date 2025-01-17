@@ -5,6 +5,7 @@ import Login from '../Pages/Login/Login';
 import Signup from '../Pages/Signup/Signup';
 import Terms from './../Pages/Terms/Terms';
 import Admin from '../Pages/Admin/Admin';
+import AddCartRedux from '../Pages/Home/Drawer/AddCartRedux';
 
 const Stack = createNativeStackNavigator();
 export default LoginStack = () => {
@@ -25,6 +26,7 @@ export default LoginStack = () => {
         name="Signup"
         component={Signup}
       />
+      
 
       <Stack.Screen
         options={{ headerShown: false }}
