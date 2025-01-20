@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -36,6 +36,41 @@ const Home = () => {
   const [selectedTask, setSelectedTask] = useState('');
   const [noDataFound, setNoDataFound] = useState(false);
   const [tasks, setTasks] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [connected, setConnected] = useState(false);
+
+  useEffect(() => {
+    // Initialize WebSocket connection
+    const socket = new WebSocket('ws://echo.websocket.org/');
+
+    socket.onopen = () => {
+      console.log('WebSocket connection opened');
+      setConnected(true);
+
+      // Sending a test message to the server
+      // socket.send(JSON.stringify({ type: 'echo', payload: 'Hello, WebSocket!' }));
+    };
+
+    socket.onmessage = (event) => {
+      console.log('Received message: ', event.data);
+      setMessages((prevMessages) => [...prevMessages, event.data]);
+    };
+
+    socket.onerror = (error) => {
+      console.log('WebSocket error: ', error.message);
+    };
+
+    socket.onclose = () => {
+      console.log('WebSocket connection closed');
+      setConnected(false);
+    };
+
+    // Cleanup the WebSocket connection on component unmount
+    return () => {
+      socket.close();
+    };
+  }, []);
+  
 
   const handleGetButtonPress = () => {
     const selectedDateString = fromDate.toISOString().split('T')[0]; // Format date to 'YYYY-MM-DD'

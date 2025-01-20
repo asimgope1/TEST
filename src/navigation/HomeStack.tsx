@@ -1,51 +1,34 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Home from '../Pages/Home/Home';
-import Login from '../Pages/Login';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import ProfileScreen from '../Pages/Home/ButtomTab/ProfileScreen';
-import {
-  createDrawerNavigator,
-  DrawerItemList,
-  useDrawerStatus,
-} from '@react-navigation/drawer';
-import {useDispatch} from 'react-redux';
-import {clearAll} from '../utils/Storage';
-import {checkuserToken} from '../redux/actions/auth';
+import {createDrawerNavigator} from '@react-navigation/drawer';
 import {
   Animated,
-  Dimensions,
-  FlatList,
-  Image,
-  KeyboardAvoidingView,
-  Modal,
-  Platform,
-  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import {Picker} from '@react-native-picker/picker';
+
+import Home from '../Pages/Home/Home';
+import ProfileScreen from '../Pages/Home/ButtomTab/ProfileScreen';
 import Discover from '../Pages/Home/ButtomTab/Discover';
 import AddCartRedux from '../Pages/Home/Drawer/AddCartRedux';
-import CustomDrawer from '../Pages/Home/Drawer/CustomDrawer';
 import SumamryCart from '../Pages/Home/Drawer/SumamryCart';
 import DescripProduct from '../Pages/Home/Drawer/DescripProduct';
 import SuccessfulBuy from '../Pages/Home/Drawer/SuccessfulBuy';
 import QRSCANNER from '../Pages/Home/Drawer/QRSCANNER';
+import CustomDrawer from '../Pages/Home/Drawer/CustomDrawer';
+import Box3 from '../Pages/Home/Drawer/Box3';
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-
-
-const HomeScreen = () => {
+// StackNavigator for Home and related screens
+const HomeStackNavigator = () => {
   return (
     <Stack.Navigator initialRouteName="Home">
       <Stack.Screen
@@ -53,51 +36,32 @@ const HomeScreen = () => {
         component={Home}
         options={{headerShown: false}}
       />
-      <Stack.Screen
-        name="AddCartRedux"
-        component={AddCartRedux}
-        
-      />
-      <Stack.Screen
-        name="SumamryCart"
-        component={SumamryCart}
-        
-      />
-      <Stack.Screen
-        name="DescripProduct"
-        component={DescripProduct}
-        
-      />
-      <Stack.Screen
-        name="SuccessfulBuy"
-        component={SuccessfulBuy}
-        
-      />
-      <Stack.Screen
-        name="QRSCANNER"
-        component={QRSCANNER}
-        
-      />
+      <Stack.Screen name="AddCartRedux" component={AddCartRedux} options={{headerShown:false}}/>
+      <Stack.Screen name="SumamryCart" component={SumamryCart}  options={{headerShown:false}}/>
+      <Stack.Screen name="DescripProduct" component={DescripProduct}  options={{headerShown:false}}/>
+      <Stack.Screen name="SuccessfulBuy" component={SuccessfulBuy}  options={{headerShown:false}} />
+      <Stack.Screen name="Box3" component={Box3}  options={{headerShown:false}} />
+      <Stack.Screen name="QRSCANNER" component={QRSCANNER}  />
     </Stack.Navigator>
   );
 };
 
+// Bottom Tab Navigator
 const TabNavigator = () => {
-  const tabBarTranslateY = useRef(new Animated.Value(0)).current; // Initially visible
+  const tabBarTranslateY = useRef(new Animated.Value(0)).current;
   const [isTabBarVisible, setIsTabBarVisible] = useState(true);
 
   const toggleTabBar = () => {
     Animated.timing(tabBarTranslateY, {
-      toValue: isTabBarVisible ? 150 : 0, // Slide down to 60px or back to 0
+      toValue: isTabBarVisible ? 150 : 0,
       duration: 300,
       useNativeDriver: true,
     }).start();
-    setIsTabBarVisible(!isTabBarVisible); // Toggle the state
+    setIsTabBarVisible(!isTabBarVisible);
   };
 
   return (
     <>
-      {/* Tab Navigator */}
       <Tab.Navigator
         screenOptions={({route}) => ({
           headerShown: false,
@@ -131,7 +95,7 @@ const TabNavigator = () => {
             }
           },
         })}>
-        <Tab.Screen name="Home" component={Home} />
+        <Tab.Screen name="Home" component={HomeStackNavigator} />
         <Tab.Screen
           name="Discover"
           component={Discover}
@@ -150,7 +114,6 @@ const TabNavigator = () => {
         <Tab.Screen name="Profile" component={ProfileScreen} />
       </Tab.Navigator>
 
-      {/* Toggle Button */}
       <TouchableOpacity style={styles.toggleButton} onPress={toggleTabBar}>
         <Text style={styles.toggleText}>
           {isTabBarVisible ? 'Hide Tab Bar' : 'Show Tab Bar'}
@@ -160,55 +123,24 @@ const TabNavigator = () => {
   );
 };
 
-
-
-
-
+// Drawer Navigator
 const DrawerNavigator = () => {
   return (
     <Drawer.Navigator
       screenOptions={{
         headerShown: false,
         drawerStyle: {
-          // backgroundColor: '#004953', // Drawer background color
-          // width: 240, // Width of the drawer
+          backgroundColor: '#fff',
         },
         drawerLabelStyle: {
           fontSize: 16,
           fontWeight: '600',
-          // color: 'white', // Text color of drawer items
         },
-        drawerActiveTintColor: '#004953', // Color for the active drawer item
-        drawerInactiveTintColor: 'gray', // Color for the inactive drawer items
-        drawerType: 'slide', // Drawer animation type
+        drawerActiveTintColor: '#004953',
+        drawerInactiveTintColor: 'gray',
       }}
       drawerContent={props => <CustomDrawer {...props} />}>
-      <Drawer.Screen name="Home" component={TabNavigator}
-      options={{
-        drawerLabel: () => null 
-      }} />
-      <Drawer.Screen name="AddCartRedux" component={AddCartRedux}
-        options={{
-          drawerLabel: () => null 
-        }}/>
-      <Drawer.Screen name="SumamryCart" component={SumamryCart}
-        options={{
-          drawerLabel: () => null 
-        }}/>
-      <Drawer.Screen name="DescripProduct" component={DescripProduct}
-        options={{
-          drawerLabel: () => null 
-        }}/>
-      <Drawer.Screen name="SuccessfulBuy" component={SuccessfulBuy}
-        options={{
-          drawerLabel: () => null 
-        }}
-        />
-      <Drawer.Screen name="QRSCANNER" component={QRSCANNER}
-        options={{
-          drawerLabel: () => null 
-
-        }}/>
+      <Drawer.Screen name="Home" component={TabNavigator} />
     </Drawer.Navigator>
   );
 };
@@ -216,7 +148,6 @@ const DrawerNavigator = () => {
 export default DrawerNavigator;
 
 const styles = StyleSheet.create({
-
   tabBar: {
     backgroundColor: '#004953',
     height: 60,
@@ -242,7 +173,7 @@ const styles = StyleSheet.create({
   },
   toggleButton: {
     position: 'absolute',
-    bottom: 150, // Place above the tab bar
+    bottom: 150,
     right: 20,
     backgroundColor: '#197460',
     paddingVertical: 10,
@@ -255,6 +186,4 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 14,
   },
- 
-  
 });

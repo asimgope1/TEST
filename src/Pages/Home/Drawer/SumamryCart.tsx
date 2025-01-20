@@ -3,181 +3,248 @@ import {
   Text,
   View,
   Image,
-  ScrollView,
+  FlatList,
   TouchableOpacity,
 } from 'react-native';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import HeaderComp from '../HeaderComp';
-import {useDispatch, useSelector} from 'react-redux';
-import {Card} from '@rneui/themed';
-import {FlatList} from 'react-native-gesture-handler';
-import { removeItem } from '../../../redux/actions/auth';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import { useDispatch, useSelector } from 'react-redux';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from '@react-navigation/native';
-import { HEIGHT } from '../../../constants/config';
+import { removeItem } from '../../../redux/actions/auth';
 
 const SummaryCart = () => {
-  const cartItems = useSelector(state => state.cartItems);
+  const cartItems = useSelector((state) => state.cartItems);
   const dispatch = useDispatch();
-  const navigation= useNavigation()
+  const navigation = useNavigation();
 
-  const removeItemHandler = index => {
+  const [serverMessage, setServerMessage] = useState(null);
+  const [webSocket, setWebSocket] = useState(null);
+
+  // Setup WebSocket connection
+  useEffect(() => {
+    // Ensure the port matches the one specified in the server
+    const socket = new WebSocket('ws://echo.websocket.org/'); 
+
+    socket.onopen = () => {
+      console.log('WebSocket connection established');
+      socket.send(
+        JSON.stringify({
+          type: 'echo',
+          payload: 'test',
+        })
+      );
+    };
+
+    socket.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      console.log('Server message received:', message);
+      setServerMessage(message);
+    };
+
+    socket.onerror = (error) => {
+      console.log('WebSocket Error:', error);
+    };
+
+    socket.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
+
+    setWebSocket(socket);
+
+    // Cleanup WebSocket on component unmount
+    return () => {
+      socket.close();
+    };
+  }, []);
+
+  const removeItemHandler = (index) => {
     dispatch(removeItem(index));
   };
 
-  const renderItem = ({item, index}) => (
-    <View style={styles.user}>
-      <Image style={styles.image} source={{uri: item.thumbnail}} />
-      <View style={styles.info}>
-        <Text style={styles.price}>{item.price} INR</Text>
+  const totalPrice = cartItems.reduce((total, item) => total + item.price, 0);
+
+  const renderItem = ({ item, index }) => (
+    <View style={styles.card}>
+      <Image style={styles.productImage} source={{ uri: item.thumbnail }} />
+      <View style={styles.details}>
+        <Text style={styles.productPrice}>₹{item.price}</Text>
+        <Text style={styles.productCategory}>{item.category}</Text>
+        <TouchableOpacity
+          style={styles.removeButton}
+          onPress={() => removeItemHandler(index)}
+        >
+          <Text style={styles.removeButtonText}>Remove</Text>
+        </TouchableOpacity>
       </View>
-      <View style={styles.info}>
-        <Text style={{
-          fontSize: 14,
-          fontWeight: '500',
-          color: '#6D6D6D',
-        }}>{item.category}</Text>
-      </View>
-      <TouchableOpacity
-        style={styles.removeButton}
-        onPress={() => removeItemHandler(index)}>
-        <Text style={styles.removeButtonText}>REMOVE</Text>
-      </TouchableOpacity>
     </View>
   );
 
   return (
     <View style={styles.container}>
-      <HeaderComp title="SummaryCart" />
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          marginTop: 10,
-          paddingHorizontal: 10,
-        }}>
-        <Text style={{
-           fontSize: 20,
-           fontWeight: '600',
-           color: '#004953',
-        }}>Cart ({cartItems.length})</Text>
-        <TouchableOpacity
-          onPress={() => {
-            // Navigate to AddCartRedux screen if needed
-          }}
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-          >
-          <MaterialIcons name="shopping-cart" size={30} color="black"
-           />
-          <Text style={{
-             fontSize: 18,
-             fontWeight: '700',
-             color: 'black',
-             marginLeft: 5,
-             backgroundColor: '#f1f1f1',
-             borderRadius: 10,
-             paddingHorizontal: 8,
-             paddingVertical: 2,
-          }}>{cartItems.length}</Text>
-        </TouchableOpacity>
-      </View>
-      <FlatList
-        data={cartItems}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={renderItem}
+      <HeaderComp title="Your Cart" />
 
-        
-      />
-      <View
-      style={{
-        height:'40%',
-            width:'50%',
-            justifyContent: 'center',
-            alignItems: 'center',
-            
-            alignSelf:'center',
-      }}>
-        <TouchableOpacity
-          style={{
-            backgroundColor: '#004953',
-            borderRadius: 5,
-            paddingHorizontal: 15,
-            paddingVertical: 10,
-            // marginTop: 20,
-            
-            position:'absolute',
-            bottom:20,
-          }}
-          onPress={() => {
-navigation.navigate('SuccessfulBuy')          }}
-        >
-          <Text style={{
-            color: 'white',
-            fontSize: 18,
-            fontWeight: '600',
-          }}>Checkout</Text>
+      {/* Cart Summary */}
+      <View style={styles.summaryHeader}>
+        <Text style={styles.cartCount}>Cart ({cartItems.length})</Text>
+        <TouchableOpacity style={styles.cartIcon}>
+          <MaterialIcons name="shopping-cart" size={30} color="#197460" />
+          <Text style={styles.cartItemCount}>{cartItems.length}</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Cart Items */}
+      {cartItems.length > 0 ? (
+        <FlatList
+          data={cartItems}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderItem}
+          contentContainerStyle={styles.list}
+        />
+      ) : (
+        <Text>Your cart is empty!</Text>
+      )}
+
+      {/* Total Price */}
+      {cartItems.length > 0 && (
+        <View style={styles.totalContainer}>
+          <Text style={styles.totalText}>Total Price: ₹{totalPrice}</Text>
+        </View>
+      )}
+
+      {/* {serverMessage && (
+        <View style={styles.serverMessageContainer}>
+          <Text style={styles.serverMessageText}>Server Message: {JSON.stringify(serverMessage)}</Text>
+        </View>
+      )} */}
+
+      {/* Checkout Button */}
+      {cartItems.length > 0 && (
+        <TouchableOpacity
+          style={styles.checkoutButton}
+          onPress={() =>
+            navigation.navigate('SuccessfulBuy', { cartItems, totalPrice })
+          }
+        >
+          <Text style={styles.checkoutButtonText}>Checkout</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 };
-
 
 export default SummaryCart;
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#f9f9f9',
   },
-  item: {
+  summaryHeader: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#fff',
+    elevation: 3,
     marginBottom: 10,
   },
-  image: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
+  cartCount: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#197460',
+  },
+  cartIcon: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#e0f2f1',
+    borderRadius: 20,
+    paddingHorizontal: 12,
+    paddingVertical: 5,
+  },
+  cartItemCount: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#197460',
+    marginLeft: 5,
+  },
+  list: {
+    paddingHorizontal: 16,
+    paddingBottom: 80, // Add padding for the checkout button
+  },
+  card: {
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 10,
+    elevation: 2,
+  },
+  productImage: {
+    width: 70,
+    height: 70,
+    borderRadius: 8,
     marginRight: 10,
   },
-  info: {
+  details: {
     flex: 1,
+    justifyContent: 'space-between',
   },
-  price: {
+  productPrice: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
   },
-  emptyText: {
-    textAlign: 'center',
-    fontSize: 16,
-    color: 'gray',
-    marginTop: 20,
-  },
-  user: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-    padding: 10,
-    backgroundColor: '#f8f8f8',
-    borderRadius: 5,
-    elevation: 2, // For shadow on Android
-    shadowColor: '#000', // For shadow on iOS
-    shadowOffset: {width: 0, height: 2}, // For shadow on iOS
-    shadowOpacity: 0.1, // For shadow on iOS
-    shadowRadius: 3, // For shadow on iOS
+  productCategory: {
+    fontSize: 14,
+    color: '#666',
   },
   removeButton: {
-    backgroundColor: '#197460',
-    paddingVertical: 8,
-    paddingHorizontal: 12,
+    alignSelf: 'flex-start',
+    backgroundColor: '#f44336',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
     borderRadius: 5,
   },
   removeButtonText: {
-    color: 'white',
+    color: '#fff',
     fontWeight: 'bold',
+    fontSize: 14,
+  },
+  totalContainer: {
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+    backgroundColor: '#fff',
+    marginBottom: 10,
+  },
+  totalText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#197460',
+    textAlign: 'right',
+  },
+  checkoutButton: {
+    backgroundColor: '#197460',
+    paddingVertical: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginHorizontal: 16,
+    marginBottom: 20,
+  },
+  checkoutButtonText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#fff',
+  },
+  serverMessageContainer: {
+    padding: 16,
+    backgroundColor: '#fff',
+    marginVertical: 10,
+  },
+  serverMessageText: {
+    fontSize: 14,
+    color: '#333',
   },
 });

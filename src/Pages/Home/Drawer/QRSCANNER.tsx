@@ -1,3 +1,5 @@
+
+
 import { StyleSheet, Text, View } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import {
@@ -7,13 +9,14 @@ import {
   useCodeScanner,
 } from 'react-native-vision-camera';
 import { TextInput } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 const QRSCANNER = () => {
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice('back');
-  const [latestScannedData, setLatestScannedData] = useState(null);
+  // const [latestScannedData, setLatestScannedData] = useState(null);
   const [isCameraActive, setIsCameraActive] = useState(true); // Manage camera active state
-
+  const navigation=useNavigation()
   useEffect(() => {
     (async () => {
       if (!hasPermission) {
@@ -26,9 +29,11 @@ const QRSCANNER = () => {
     codeTypes: ['qr', 'ean-13'], // Specify the types of codes to scan
     onCodeScanned: (codes) => {
       if (codes.length > 0) {
-        setLatestScannedData(codes[0].value); // Update state with the first scanned code
+        // setLatestScannedData(codes[0].value); // Update state with the first scanned code
+        const scannedData=codes[0].value
         console.log(codes[0].value);
         setIsCameraActive(false); // Stop the camera after scanning
+        navigation.navigate('Box3',{scannedData})
       }
     },
   });
@@ -49,7 +54,7 @@ const QRSCANNER = () => {
         device={device}
         isActive={isCameraActive} // Stop the camera once a code is scanned
       />
-      {latestScannedData && (
+      {/* {latestScannedData && (
         <View style={styles.resultContainer}>
           <TextInput
             placeholder="Scanned Code"
@@ -58,7 +63,7 @@ const QRSCANNER = () => {
             editable={false} // Make it non-editable
           />
         </View>
-      )}
+      )} */}
     </View>
   );
 };
